@@ -1,12 +1,5 @@
 FROM python:3.11-slim
 
-# Install Chrome and dependencies
-RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg \
-    unzip \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-
 
 WORKDIR /app
 
