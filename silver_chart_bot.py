@@ -138,8 +138,8 @@ def main():
     # Run immediately on start
     job()
     
-    # Schedule to run every 3 minutes
-    schedule.every(3).minutes.do(job)
+    # Schedule to run every 60 minutes
+    schedule.every(60).minutes.do(job)
     
     print("\n✓ Bot is running. Waiting for scheduled updates...")
     
