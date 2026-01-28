@@ -160,21 +160,35 @@ def scan_and_notify():
                 logger.info(f"  Buy 24h: ${buy_24h:,.2f}")
                 logger.info(f"  Sell 24h: ${sell_24h:,.2f}")
                 
-                # CHECK 5: Holder growth
+                # CHECK 5: Holder growth (optional if other metrics are very strong)
                 if holder_growth <= 0:
-                    logger.info(f"❌ REJECTED: No holder growth ({holder_growth})\n")
-                    continue
-                logger.info(f"✓ Holder growth OK (+{holder_growth})")
+                    logger.info(f"⚠ WARNING: No holder growth ({holder_growth})")
+                    
+                    # If other metrics are exceptionally strong, still consider it
+                    if volume_24h > 1000000 and price_change_24h > 20:
+                        logger.info(f"✓ Accepting anyway - exceptional volume (${volume_24h:,.0f}) and price action (+{price_change_24h:.1f}%)")
+                    else:
+                        logger.info(f"❌ REJECTED: No holder growth and metrics not exceptional\n")
+                        continue
+                else:
+                    logger.info(f"✓ Holder growth OK (+{holder_growth})")
                 
-                # CHECK 6: Buy/Sell ratio
+                # CHECK 6: Buy/Sell ratio (optional if volume is very high)
                 if sell_24h > 0:
                     buy_sell_ratio = buy_24h / sell_24h
                     logger.info(f"  Buy/Sell Ratio: {buy_sell_ratio:.2f}x")
                     
                     if buy_sell_ratio <= 1.0:
-                        logger.info(f"❌ REJECTED: More sells than buys (ratio: {buy_sell_ratio:.2f})\n")
-                        continue
-                    logger.info(f"✓ Buy pressure OK")
+                        logger.info(f"⚠ WARNING: More sells than buys (ratio: {buy_sell_ratio:.2f})")
+                        
+                        # If volume is huge, still consider it
+                        if volume_24h > 5000000:
+                            logger.info(f"✓ Accepting anyway - exceptional volume (${volume_24h:,.0f})")
+                        else:
+                            logger.info(f"❌ REJECTED: More sells than buys and volume not exceptional\n")
+                            continue
+                    else:
+                        logger.info(f"✓ Buy pressure OK")
                 else:
                     buy_sell_ratio = 999
                     logger.info(f"✓ Only buys, no sells")
